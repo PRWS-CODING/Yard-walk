@@ -11,6 +11,10 @@
   letter-spacing: 0.05em;
 }
 
+#trailer-number {
+  width: 93%;
+}
+
 .input-field {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -107,7 +111,7 @@ body {
 
 .input-field {
   width: 100%;
-  max-width: 578px;
+  max-width: 580px;
   padding: 0.75rem;
   background-color: #1e2a4a;
   border: 1px solid #33415c;

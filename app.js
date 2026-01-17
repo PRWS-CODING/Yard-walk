@@ -354,6 +354,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             button.addEventListener("click", async (event) => {
               const docId = event.target.dataset.docId;
               if (docId) {
+                const trailerData = allTrailers[docId];
+                const confirmMessage = trailerData
+                  ? `Are you sure you want to delete trailer ${trailerData.trailerNumber}?`
+                  : "Are you sure you want to delete this trailer?";
+
+                if (!window.confirm(confirmMessage)) return;
+
                 const docRef = doc(trailersCollectionRef, docId);
                 try {
                   await deleteDoc(docRef);
