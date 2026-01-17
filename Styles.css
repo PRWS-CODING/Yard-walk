@@ -24,7 +24,9 @@
   color: #fff;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .input-field:focus {
@@ -101,8 +103,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-
-
 .input-label {
   display: block;
   margin-bottom: 0.5rem;
@@ -118,8 +118,6 @@ body {
   border-radius: 0.5rem;
   color: #ffffff;
 }
-
-
 
 /* .radio-group, */
 .checkbox-group {
@@ -345,11 +343,11 @@ img {
     -45deg,
     #57a41c 0%,
     #5933cb 50%,
-    #becdcf 100%;
+    #becdcf 100%
   );
   background: -webkit-linear-gradient(
     -45deg,
-    #57a41c: 0%; #5933cb: 50%; #becdcf: 100%;
+    #57a41c 0%, #5933cb 50%, #becdcf 100%
   );
   background: linear-gradient(135deg, #57a41c 0%, #5933cb 50%, #becdcf 100%);
   background-clip: text;
@@ -1056,7 +1054,9 @@ img {
   height: 100%;
   line-height: 38px;
   text-align: center;
-  transition: background 0.2s, 0.3s;
+  transition:
+    background 0.2s,
+    0.3s;
 }
 
 .input:checked + .btn {
@@ -1109,7 +1109,9 @@ img {
   right: calc(var(--border) * -1);
   bottom: calc(var(--border) * -1);
   background: var(--shadow-primary);
-  text-shadow: 2px 2px var(--shadow-primary), -2px -2px var(--shadow-secondary);
+  text-shadow:
+    2px 2px var(--shadow-primary),
+    -2px -2px var(--shadow-secondary);
   clip-path: var(--clip);
   animation: glitch 2s infinite;
   display: none;
