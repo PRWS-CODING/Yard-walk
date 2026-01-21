@@ -168,43 +168,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     trailerNumberInput.setAttribute("placeholder", "3XXXXX");
     trailerNumberInput.setAttribute("maxlength", "6");
 
-    trailerNumberInput.addEventListener("input", function () {
-      // 1. Enforce constraints (Start with 3, Numeric only)
-      let value = this.value.replace(/\D/g, "");
+    const forceStartWith3 = (input) => {
+      // 1. Remove any non-numeric characters
+      let value = input.value.replace(/\D/g, "");
 
-      // If there is input, ensure it starts with 3
+      // 2. If it doesn't start with 3, add it to the front
       if (value.length > 0 && !value.startsWith("3")) {
         value = "3" + value;
       }
 
-      // Truncate to 6 chars
-      if (value.length > 6) {
-        value = value.substring(0, 6);
-      }
+      // 3. Re-apply the 6-character limit
+      input.value = value.substring(0, 6);
+    };
 
-      // Update input value if it changed (avoids unnecessary cursor jumps)
-      if (this.value !== value) {
-        this.value = value;
-      }
-
-      // 2. Check for completion
-      if (this.value.length === 6) {
-        setTimeout(() => {
-          if (this.value.length !== 6) return;
-
-          const shouldSubmit = confirm(
-            `You entered: ${this.value}.\n\nClick OK to Submit.\nClick Cancel to Edit.`
-          );
-
-          if (shouldSubmit) {
-            // User confirmed: Submit the form automatically
-            addTrailerButton.click();
-          } else {
-            // User wants to edit: Focus back
-            this.focus();
-          }
-        }, 50);
-      }
+    trailerNumberInput.addEventListener("input", () => {
+      forceStartWith3(trailerNumberInput);
     });
 
     trailerNumberInput.addEventListener("keydown", (event) => {
