@@ -13,6 +13,7 @@ import {
   setDoc,
   query,
   orderBy,
+  writeBatch,
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import {
   getFunctions,
@@ -40,6 +41,7 @@ const firebaseConfig = envFirebaseConfig || {
 let db;
 let auth;
 let trailersCollectionRef;
+let logsCollectionRef;
 let isAuthenticated = false;
 let editingDocId = null;
 
@@ -155,6 +157,59 @@ document.addEventListener("DOMContentLoaded", async () => {
       db,
       `artifacts/${appId}/public/data/trailers`
     );
+
+    logsCollectionRef = collection(
+      db,
+      `artifacts/${appId}/public/data/trailer_logs`
+    );
+
+    // Enforce trailer number constraints
+    trailerNumberInput.setAttribute("inputmode", "numeric");
+    trailerNumberInput.setAttribute("placeholder", "3XXXXX");
+    trailerNumberInput.setAttribute("maxlength", "6");
+
+    const forceStartWith3 = (input) => {
+      // 1. Remove any non-numeric characters
+      let value = input.value.replace(/\D/g, "");
+
+      // 2. If it doesn't start with 3, add it to the front
+      if (value.length > 0 && !value.startsWith("3")) {
+        value = "3" + value;
+      }
+
+      // 3. Re-apply the 6-character limit
+      input.value = value.substring(0, 6);
+    };
+
+    trailerNumberInput.addEventListener("input", () => {
+      forceStartWith3(trailerNumberInput);
+    });
+
+    // Add an event listener to detect typing
+    trailerNumberInput.addEventListener("input", function () {
+      // Check if the input length has reached 6 digits
+      if (this.value.length === 6) {
+        // Use setTimeout to allow the UI to update before blocking with the confirm dialog
+        setTimeout(() => {
+          // Ensure value is still 6 digits (prevents popup if user hit Enter/Reset immediately)
+          if (this.value.length !== 6) return;
+
+          const userConfirmed = confirm(
+            `You entered: ${this.value}. Would you like to edit this number before continuing?`
+          );
+
+          if (userConfirmed) {
+            // User clicked 'OK' (to edit): Focus back on the field
+            this.focus();
+            console.log("User chose to edit.");
+          } else {
+            // User clicked 'Cancel': Treat the input as final
+            localStorage.setItem("lastTrailer", this.value);
+            console.log("Trailer confirmed: " + this.value);
+          }
+        }, 10);
+      }
+    });
 
     trailerNumberInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -423,7 +478,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       const docRef = doc(trailersCollectionRef, docIdToUse);
 
       try {
+        // 1. Save the main trailer data (Critical)
         await setDoc(docRef, trailerData);
+
+        // 2. Try to save to logs (Non-critical)
+        // We wrap this in a separate try/catch so permission errors here don't block the main save
+        try {
+          const logDocRef = doc(logsCollectionRef);
+          await setDoc(logDocRef, {
+            ...trailerData,
+            action: editingDocId ? "update" : "create",
+            logTimestamp: new Date(),
+          });
+        } catch (logError) {
+          console.warn("Log entry failed (check Firestore rules):", logError);
+        }
+
         lastEnteredWindow.textContent = `${
           editingDocId ? "Updated" : "Recently entered"
         }: ${trailerNumber}`;
