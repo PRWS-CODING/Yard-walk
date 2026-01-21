@@ -168,46 +168,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     trailerNumberInput.setAttribute("placeholder", "3XXXXX");
     trailerNumberInput.setAttribute("maxlength", "6");
 
-    const forceStartWith3 = (input) => {
-      // 1. Remove any non-numeric characters
-      let value = input.value.replace(/\D/g, "");
+    trailerNumberInput.addEventListener("input", function () {
+      // 1. Enforce constraints (Start with 3, Numeric only)
+      let value = this.value.replace(/\D/g, "");
 
-      // 2. If it doesn't start with 3, add it to the front
+      // If there is input, ensure it starts with 3
       if (value.length > 0 && !value.startsWith("3")) {
         value = "3" + value;
       }
 
-      // 3. Re-apply the 6-character limit
-      input.value = value.substring(0, 6);
-    };
+      // Truncate to 6 chars
+      if (value.length > 6) {
+        value = value.substring(0, 6);
+      }
 
-    trailerNumberInput.addEventListener("input", () => {
-      forceStartWith3(trailerNumberInput);
-    });
+      // Update input value if it changed (avoids unnecessary cursor jumps)
+      if (this.value !== value) {
+        this.value = value;
+      }
 
-    // Add an event listener to detect typing
-    trailerNumberInput.addEventListener("input", function () {
-      // Check if the input length has reached 6 digits
+      // 2. Check for completion
       if (this.value.length === 6) {
-        // Use setTimeout to allow the UI to update before blocking with the confirm dialog
         setTimeout(() => {
-          // Ensure value is still 6 digits (prevents popup if user hit Enter/Reset immediately)
           if (this.value.length !== 6) return;
 
-          const userConfirmed = confirm(
-            `You entered: ${this.value}. Would you like to edit this number before continuing?`
+          const shouldSubmit = confirm(
+            `You entered: ${this.value}.\n\nClick OK to Submit.\nClick Cancel to Edit.`
           );
 
-          if (userConfirmed) {
-            // User clicked 'OK' (to edit): Focus back on the field
-            this.focus();
-            console.log("User chose to edit.");
+          if (shouldSubmit) {
+            // User confirmed: Submit the form automatically
+            addTrailerButton.click();
           } else {
-            // User clicked 'Cancel': Treat the input as final
-            localStorage.setItem("lastTrailer", this.value);
-            console.log("Trailer confirmed: " + this.value);
+            // User wants to edit: Focus back
+            this.focus();
           }
-        }, 10);
+        }, 50);
       }
     });
 
