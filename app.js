@@ -12,13 +12,7 @@ import {
   collection,
   setDoc,
   query,
-  orderBy,
-  writeBatch,
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import {
-  getFunctions,
-  httpsCallable,
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
 const appId = typeof __app_id !== "undefined" ? __app_id : "default-app-id";
 const initialAuthToken =
@@ -44,6 +38,7 @@ let trailersCollectionRef;
 let logsCollectionRef;
 let isAuthenticated = false;
 let editingDocId = null;
+let activeTrailers = new Set();
 
 const setUIState = (state) => {
   const addTrailerButton = document.getElementById("add-trailer");
@@ -118,16 +113,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fullCountSpan = document.getElementById("full-count");
   const needsFuelCountSpan = document.getElementById("needs-fuel-count");
   const allEmptyTrailersList = document.getElementById(
-    "all-empty-trailers-list"
+    "all-empty-trailers-list",
   );
   const allSalvageTrailersList = document.getElementById(
-    "all-salvage-trailers-list"
+    "all-salvage-trailers-list",
   );
   const allPalletShuttleTrailersList = document.getElementById(
-    "all-pallet-shuttle-trailers-list"
+    "all-pallet-shuttle-trailers-list",
   );
   const allInboundSeasonalTrailersList = document.getElementById(
-    "all-inbound-seasonal-trailers-list"
+    "all-inbound-seasonal-trailers-list",
   );
   const needsFuelList = document.getElementById("needs-fuel-list");
   const addCommentButton = document.getElementById("add-comment-button");
@@ -155,12 +150,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     trailersCollectionRef = collection(
       db,
-      `artifacts/${appId}/public/data/trailers`
+      `artifacts/${appId}/public/data/trailers`,
     );
 
     logsCollectionRef = collection(
       db,
-      `artifacts/${appId}/public/data/trailer_logs`
+      `artifacts/${appId}/public/data/trailer_logs`,
     );
 
     // Enforce trailer number constraints
@@ -218,6 +213,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
           allTrailers[doc.id] = trailerData;
         });
+
+        activeTrailers = new Set(Object.keys(allTrailers));
 
         const trailers = Object.keys(allTrailers).map((id) => ({
           id,
@@ -280,8 +277,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               trailerData.northFence !== "None"
                 ? `NF: ${trailerData.northFence}`
                 : trailerData.southFence !== "None"
-                ? `SF: ${trailerData.southFence}`
-                : "";
+                  ? `SF: ${trailerData.southFence}`
+                  : "";
             listItem.innerHTML = `
                           <div class="trailer-info">
                               <div class="trailer-number">${trailerData.trailerNumber} ${parkingSpot}</div>
@@ -303,7 +300,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const palletShuttleItem = createListItem(
               docId,
               trailerData,
-              details
+              details,
             );
             allPalletShuttleTrailersList.appendChild(palletShuttleItem);
           }
@@ -312,7 +309,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const inboundSeasonalItem = createListItem(
               docId,
               trailerData,
-              details
+              details,
             );
             allInboundSeasonalTrailersList.appendChild(inboundSeasonalItem);
           }
@@ -346,11 +343,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const addEditAndDeleteListeners = (listElement) => {
           listElement.querySelectorAll(".edit-button").forEach((button) => {
             button.addEventListener("click", (event) => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
               const docId = event.target.dataset.docId;
               const trailerData = allTrailers[docId];
               trailerNumberInput.value = trailerData.trailerNumber;
               document.querySelector(
-                `input[name="status"][value="${trailerData.status}"]`
+                `input[name="status"][value="${trailerData.status}"]`,
               ).checked = true;
               needsFuelCheckbox.checked = trailerData.needsFuel;
               inboundCheckbox.checked = trailerData.inbound;
@@ -371,7 +369,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 .querySelectorAll(".trailer-item")
                 .forEach((item) => item.classList.remove("editing"));
               const itemToEdit = document.querySelector(
-                `[data-doc-id="${docId}"]`
+                `[data-doc-id="${docId}"]`,
               );
               if (itemToEdit) {
                 itemToEdit.classList.add("editing");
@@ -412,16 +410,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       (error) => {
         setUIState("enabled");
         displayError(
-          "Failed to load trailers. Please check your Firebase rules and database path."
+          "Failed to load trailers. Please check your Firebase rules and database path.",
         );
-      }
+      },
     );
 
     addTrailerButton.addEventListener("click", async () => {
       hideError();
       if (!isAuthenticated) {
         displayError(
-          "You are not authenticated. Please try refreshing the page."
+          "You are not authenticated. Please try refreshing the page.",
         );
         return;
       }
@@ -431,8 +429,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
+      if (!editingDocId && activeTrailers.has(trailerNumber)) {
+        if (
+          !window.confirm(
+            `Warning: Trailer ${trailerNumber} is already in the system. Do you want to overwrite it?`,
+          )
+        ) {
+          return;
+        }
+      }
+
       const status = document.querySelector(
-        'input[name="status"]:checked'
+        'input[name="status"]:checked',
       ).value;
       const comments = commentsTextarea.value.trim();
       const trailerData = {
@@ -481,7 +489,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     setUIState("disabled");
     displayError(
-      `Authentication Failed: ${error.message}. Please check your Firebase configuration.`
+      `Authentication Failed: ${error.message}. Please check your Firebase configuration.`,
     );
   }
 });
