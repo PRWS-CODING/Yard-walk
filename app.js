@@ -343,7 +343,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const addEditAndDeleteListeners = (listElement) => {
           listElement.querySelectorAll(".edit-button").forEach((button) => {
             button.addEventListener("click", (event) => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
               const docId = event.target.dataset.docId;
               const trailerData = allTrailers[docId];
               trailerNumberInput.value = trailerData.trailerNumber;
