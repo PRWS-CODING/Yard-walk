@@ -373,6 +373,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               if (itemToEdit) {
                 itemToEdit.classList.add("editing");
               }
+              trailerNumberInput.scrollIntoView({ behavior: "smooth", block: "center" });
+              trailerNumberInput.focus();
             });
           });
 
