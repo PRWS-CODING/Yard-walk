@@ -39,6 +39,7 @@ let logsCollectionRef;
 let isAuthenticated = false;
 let editingDocId = null;
 let activeTrailers = new Set();
+let occupiedSpots = new Map();
 
 const setUIState = (state) => {
   const addTrailerButton = document.getElementById("add-trailer");
@@ -215,6 +216,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         activeTrailers = new Set(Object.keys(allTrailers));
+
+        occupiedSpots.clear();
+        Object.entries(allTrailers).forEach(([id, data]) => {
+          if (data.northFence && data.northFence !== "None") {
+            occupiedSpots.set(`NF:${data.northFence}`, {
+              id,
+              number: data.trailerNumber,
+            });
+          }
+          if (data.southFence && data.southFence !== "None") {
+            occupiedSpots.set(`SF:${data.southFence}`, {
+              id,
+              number: data.trailerNumber,
+            });
+          }
+        });
 
         const trailers = Object.keys(allTrailers).map((id) => ({
           id,
@@ -442,6 +459,34 @@ document.addEventListener("DOMContentLoaded", async () => {
           )
         ) {
           return;
+        }
+      }
+
+      const currentDocId = editingDocId || trailerNumber;
+
+      if (northFenceSelect.value !== "None") {
+        const key = `NF:${northFenceSelect.value}`;
+        if (occupiedSpots.has(key)) {
+          const occupant = occupiedSpots.get(key);
+          if (occupant.id !== currentDocId) {
+            displayError(
+              `North Fence spot ${northFenceSelect.value} is already occupied by trailer ${occupant.number}.`,
+            );
+            return;
+          }
+        }
+      }
+
+      if (southFenceSelect.value !== "None") {
+        const key = `SF:${southFenceSelect.value}`;
+        if (occupiedSpots.has(key)) {
+          const occupant = occupiedSpots.get(key);
+          if (occupant.id !== currentDocId) {
+            displayError(
+              `South Fence spot ${southFenceSelect.value} is already occupied by trailer ${occupant.number}.`,
+            );
+            return;
+          }
         }
       }
 
