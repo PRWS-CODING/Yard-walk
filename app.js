@@ -41,6 +41,36 @@ let editingDocId = null;
 let activeTrailers = new Set();
 let occupiedSpots = new Map();
 
+const updateFenceDropdowns = () => {
+  const northSelect = document.getElementById("north-fence-line");
+  const southSelect = document.getElementById("south-fence-line");
+
+  const updateOptions = (select, prefix) => {
+    if (!select) return;
+    for (let option of select.options) {
+      if (option.value === "None") continue;
+
+      if (!option.dataset.originalText) {
+        option.dataset.originalText = option.textContent;
+      }
+
+      const key = `${prefix}:${option.value}`;
+      const occupant = occupiedSpots.get(key);
+
+      if (occupant && (!editingDocId || occupant.id !== editingDocId)) {
+        option.disabled = true;
+        option.textContent = `${option.dataset.originalText} (Occupied: ${occupant.number})`;
+      } else {
+        option.disabled = false;
+        option.textContent = option.dataset.originalText;
+      }
+    }
+  };
+
+  updateOptions(northSelect, "NF");
+  updateOptions(southSelect, "SF");
+};
+
 const setUIState = (state) => {
   const addTrailerButton = document.getElementById("add-trailer");
   const loadingOverlay = document.getElementById("loading-overlay");
@@ -76,6 +106,7 @@ const resetForm = () => {
   document
     .querySelectorAll(".trailer-item")
     .forEach((item) => item.classList.remove("editing"));
+  updateFenceDropdowns();
 };
 
 const getSortableValue = (trailerData) => {
@@ -232,6 +263,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
           }
         });
+
+        updateFenceDropdowns();
 
         const trailers = Object.keys(allTrailers).map((id) => ({
           id,
@@ -390,6 +423,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               if (itemToEdit) {
                 itemToEdit.classList.add("editing");
               }
+              updateFenceDropdowns();
               trailerNumberInput.focus();
               setTimeout(() => {
                 trailerNumberInput.scrollIntoView({
