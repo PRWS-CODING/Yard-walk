@@ -23,7 +23,7 @@ const envFirebaseConfig =
     : null;
 
 const firebaseConfig = envFirebaseConfig || {
-  apiKey: "AIzaSyAxHIhsDl7uR2lmcmj9EWy8epX-1uBmrsw",
+  apiKey: "FIREBASE_API",
   authDomain: "yard-walk.firebaseapp.com",
   projectId: "yard-walk",
   storageBucket: "yard-walk.firebasestorage.app",
