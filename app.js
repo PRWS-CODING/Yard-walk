@@ -331,16 +331,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                   : "";
             listItem.innerHTML = `
                           <div class="trailer-info">
-                              <div class="trailer-number">${trailerData.trailerNumber} ${parkingSpot}</div>
+                              <div class="trailer-number">${trailerData.trailerNumber}</div>
+                              <div>
+                                  <button class="edit-button" data-doc-id="${docId}">
+                                      &#9998;
+                                  </button>
+                                  <button class="delete-button" data-doc-id="${docId}">
+                                      &times;
+                                  </button>
+                              </div>
                               <div class="text-sm text-gray-400">${details}</div>
-                          </div>
-                          <div>
-                              <button class="edit-button" data-doc-id="${docId}">
-                                  &#9998;
-                              </button>
-                              <button class="delete-button" data-doc-id="${docId}">
-                                  &times;
-                              </button>
                           </div>
                       `;
             return listItem;
