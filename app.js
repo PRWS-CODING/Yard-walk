@@ -561,9 +561,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           console.warn("Log entry failed (check Firestore rules):", logError);
         }
 
+        const parkingSpot =
+          trailerData.northFence !== "None"
+            ? ` (NF: ${trailerData.northFence})`
+            : trailerData.southFence !== "None"
+              ? ` (SF: ${trailerData.southFence})`
+              : "";
+
         lastEnteredWindow.textContent = `${
           editingDocId ? "Updated" : "Recently entered"
-        }: ${trailerNumber}`;
+        }: ${trailerNumber}${parkingSpot}`;
         lastEnteredWindow.style.display = "block";
         resetForm();
       } catch (e) {
