@@ -162,7 +162,7 @@ body {
 
 /* Trailer List */
 .trailer-list-container {
-  max-height: 300px;
+  max-height: 446px;
   overflow-y: auto;
   border: 1px solid #33415c;
   border-radius: 0.5rem;
@@ -191,8 +191,7 @@ body {
   transition: outline-color 0.2s ease-in-out;
   border: 1px solid;
   border-color: #f6f7fa;
-  box-shadow: 2px 2px 8px blue
-  
+  box-shadow: 2px 2px 8px blue;
 }
 
 .trailer-item.editing {
