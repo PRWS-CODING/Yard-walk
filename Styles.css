@@ -12,7 +12,10 @@
 }
 
 #trailer-number {
-  width: 92%;
+  width: 348px;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
 }
 
 .input-field {
@@ -353,7 +356,6 @@ body {
   justify-content: space-between;
   text-shadow: 2px 4px 4px gold;
   padding-right: 8px;
-
 }
 
 #empty-count,
