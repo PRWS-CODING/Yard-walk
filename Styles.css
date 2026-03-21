@@ -36,6 +36,7 @@
 
 .textarea-field {
   resize: vertical;
+
   min-height: 80px;
 }
 
@@ -340,9 +341,11 @@ body {
 }
 
 .counts {
-  display: flex;
-  justify-content: space-evenly;
+  /* display: flex; */
+  /* justify-content: space-between; */
   text-shadow: 2px 4px 4px gold;
+  padding-right: 8px;
+
 }
 
 /* Footer */
