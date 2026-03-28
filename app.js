@@ -375,8 +375,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           if (trailerData.status === "Empty") {
             emptyCount++;
-            const emptyListItem = createListItem(docId, trailerData, details);
-            allEmptyTrailersList.appendChild(emptyListItem);
+            if (!trailerData.needsFuel) {
+              const emptyListItem = createListItem(docId, trailerData, details);
+              allEmptyTrailersList.appendChild(emptyListItem);
+            }
           } else if (trailerData.status === "Salvage") {
             salvageCount++;
             const salvageListItem = createListItem(docId, trailerData, details);
