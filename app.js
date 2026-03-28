@@ -39,6 +39,7 @@ let logsCollectionRef;
 let isAuthenticated = false;
 let editingDocId = null;
 let activeTrailers = new Set();
+let selectedTrailers = new Set();
 let occupiedSpots = new Map();
 
 const updateFenceDropdowns = () => {
@@ -143,6 +144,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const emptyCountSpan = document.getElementById("empty-count");
   const salvageCountSpan = document.getElementById("salvage-count");
   const fullCountSpan = document.getElementById("full-count");
+  const salvageNeedsFuelCountSpan = document.getElementById(
+    "salvage-needs-fuel-count",
+  );
   const needsFuelCountSpan = document.getElementById("needs-fuel-count");
   const allEmptyTrailersList = document.getElementById(
     "all-empty-trailers-list",
@@ -155,6 +159,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
   const allInboundSeasonalTrailersList = document.getElementById(
     "all-inbound-seasonal-trailers-list",
+  );
+  const salvageNeedsFuelList = document.getElementById(
+    "salvage-needs-fuel-list",
   );
   const needsFuelList = document.getElementById("needs-fuel-list");
   const addCommentButton = document.getElementById("add-comment-button");
@@ -227,10 +234,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         allPalletShuttleTrailersList.innerHTML = "";
         allInboundSeasonalTrailersList.innerHTML = "";
         needsFuelList.innerHTML = "";
+        if (salvageNeedsFuelList) salvageNeedsFuelList.innerHTML = "";
         let emptyCount = 0;
         let salvageCount = 0;
         let fullCount = 0;
         let needsFuelCount = 0;
+        let salvageNeedsFuelCount = 0;
         let allTrailers = {};
 
         const tenHoursAgo = new Date(Date.now() - 10 * 60 * 60 * 1000);
@@ -318,8 +327,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           const createListItem = (docId, trailerData, details) => {
             const listItem = document.createElement("li");
-            listItem.className = `trailer-item ${
-              docId === editingDocId ? "editing" : ""
+            listItem.className = `trailer-item ${docId === editingDocId ? "editing" : ""} ${
+              selectedTrailers.has(docId) ? "selected" : ""
             }`;
             listItem.dataset.docId = docId;
             listItem.dataset.trailerNumber = trailerData.trailerNumber;
@@ -376,21 +385,52 @@ document.addEventListener("DOMContentLoaded", async () => {
             fullCount++;
           }
 
-          if (trailerData.needsFuel) {
+          if (trailerData.status === "Empty" && trailerData.needsFuel) {
             const needsFuelItem = createListItem(docId, trailerData, details);
             needsFuelItem.classList.add("needs-fuel");
             needsFuelList.appendChild(needsFuelItem);
             needsFuelCount++;
+          }
+
+          if (trailerData.status === "Salvage" && trailerData.needsFuel) {
+            if (salvageNeedsFuelList) {
+              const salvageNeedsFuelItem = createListItem(
+                docId,
+                trailerData,
+                details,
+              );
+              salvageNeedsFuelItem.classList.add("needs-fuel");
+              salvageNeedsFuelList.appendChild(salvageNeedsFuelItem);
+            }
+            salvageNeedsFuelCount++;
           }
         });
 
         emptyCountSpan.textContent = `Empty: ${emptyCount}`;
         salvageCountSpan.textContent = `Salvage: ${salvageCount}`;
         fullCountSpan.textContent = `Full: ${fullCount}`;
+        if (salvageNeedsFuelCountSpan) {
+          salvageNeedsFuelCountSpan.textContent = salvageNeedsFuelCount;
+        }
         needsFuelCountSpan.textContent = needsFuelCount;
         setUIState("enabled");
 
         const addEditAndDeleteListeners = (listElement) => {
+          listElement.querySelectorAll(".trailer-item").forEach((item) => {
+            item.addEventListener("click", (event) => {
+              if (event.target.closest("button")) return;
+              const docId = item.dataset.docId;
+              const isNowSelected = !selectedTrailers.has(docId);
+              if (isNowSelected) selectedTrailers.add(docId);
+              else selectedTrailers.delete(docId);
+              document
+                .querySelectorAll(`[data-doc-id="${docId}"]`)
+                .forEach((el) => {
+                  el.classList.toggle("selected", isNowSelected);
+                });
+            });
+          });
+
           listElement.querySelectorAll(".edit-button").forEach((button) => {
             button.addEventListener("click", (event) => {
               const docId = event.target.dataset.docId;
@@ -463,6 +503,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         addEditAndDeleteListeners(allPalletShuttleTrailersList);
         addEditAndDeleteListeners(allInboundSeasonalTrailersList);
         addEditAndDeleteListeners(needsFuelList);
+        if (salvageNeedsFuelList)
+          addEditAndDeleteListeners(salvageNeedsFuelList);
       },
       (error) => {
         setUIState("enabled");
