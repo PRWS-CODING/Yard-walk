@@ -422,14 +422,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             item.addEventListener("click", (event) => {
               if (event.target.closest("button")) return;
               const docId = item.dataset.docId;
-              const isNowSelected = !selectedTrailers.has(docId);
-              if (isNowSelected) selectedTrailers.add(docId);
-              else selectedTrailers.delete(docId);
+              const wasSelected = selectedTrailers.has(docId);
+
+              // Clear all previous selections from the state and the UI
+              selectedTrailers.clear();
               document
-                .querySelectorAll(`[data-doc-id="${docId}"]`)
-                .forEach((el) => {
-                  el.classList.toggle("selected", isNowSelected);
-                });
+                .querySelectorAll(".trailer-item.selected")
+                .forEach((el) => el.classList.remove("selected"));
+
+              // If it wasn't already selected, select it now
+              if (!wasSelected) {
+                selectedTrailers.add(docId);
+                document
+                  .querySelectorAll(`[data-doc-id="${docId}"]`)
+                  .forEach((el) => el.classList.add("selected"));
+              }
             });
           });
 
