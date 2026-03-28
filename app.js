@@ -420,17 +420,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         const addEditAndDeleteListeners = (listElement) => {
           listElement.querySelectorAll(".trailer-item").forEach((item) => {
             item.addEventListener("click", (event) => {
-              if (event.target.closest("button")) return;
+              if (
+                event.target.closest(".edit-button") ||
+                event.target.closest(".delete-button")
+              )
+                return;
+
               const docId = item.dataset.docId;
               const wasSelected = selectedTrailers.has(docId);
 
-              // Clear all previous selections from the state and the UI
+              // Force single selection: clear everything first
               selectedTrailers.clear();
               document
                 .querySelectorAll(".trailer-item.selected")
                 .forEach((el) => el.classList.remove("selected"));
 
-              // If it wasn't already selected, select it now
               if (!wasSelected) {
                 selectedTrailers.add(docId);
                 document
