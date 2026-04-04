@@ -229,14 +229,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       // If the typed number exists in our active trailers set
       if (searchValue && activeTrailers.has(searchValue)) {
         selectedTrailers.add(searchValue);
-        
+
         // Find all elements representing this trailer (it might appear in multiple lists)
-        const targetElements = document.querySelectorAll(`[data-doc-id="${searchValue}"]`);
+        const targetElements = document.querySelectorAll(
+          `[data-doc-id="${searchValue}"]`,
+        );
         targetElements.forEach((el) => el.classList.add("selected"));
 
         // Scroll the first instance found into view
         if (targetElements.length > 0) {
-          targetElements[0].scrollIntoView({ behavior: "smooth", block: "center" });
+          // A small timeout helps mobile browsers calculate the scroll position correctly
+          // while the virtual keyboard is active.
+          setTimeout(() => {
+            targetElements[0].scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+          }, 100);
         }
       }
     });
