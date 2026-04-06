@@ -261,13 +261,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
 
-      // Keep your scroll logic for the first match found
-      if (searchValue.length >= 3) {
-        const firstMatch = document.querySelector(`.trailer-item:not(.hidden)`);
-        if (firstMatch) {
+      // Scroll only when the full 6-digit number is entered
+      if (searchValue.length === 6) {
+        const exactMatch = document.querySelector(`.trailer-item.selected`);
+        if (exactMatch) {
           setTimeout(() => {
-            firstMatch.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          });
+            exactMatch.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          })
         }
       }
     });
