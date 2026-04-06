@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 .input-group {
   margin-bottom: 1.5rem;
 }
@@ -12,14 +16,14 @@
 }
 
 #trailer-number {
-  width: 348px;
+  width: 100%;
   max-width: 100%;
   display: block;
   margin: 0 auto;
 }
 
 .input-field {
-  width: 90%;
+  width: 100%;
   max-width: 500px;
   padding: 0.75rem 1rem;
   border: 1px solid #3c4250;
@@ -117,8 +121,7 @@ body {
 }
 
 .input-fenceline {
-  width: 300px;
-  max-width: 580px;
+  width: 100%;
   padding: 0.75rem;
   background-color: #1e2a4a;
   border: 1px solid #33415c;
@@ -231,7 +234,7 @@ body {
 
 .trailer-item.selected {
   border-color: #ffd700;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 15px rgba(252, 236, 3, 0.5);
   background-color: #233554;
 }
 
