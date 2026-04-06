@@ -202,6 +202,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     trailerNumberInput.setAttribute("placeholder", "3XXXXX");
     trailerNumberInput.setAttribute("maxlength", "6");
 
+    // Make fence line selections mutually exclusive
+    northFenceSelect.addEventListener("change", () => {
+      if (northFenceSelect.value !== "None") {
+        southFenceSelect.value = "None";
+      }
+      updateFenceDropdowns();
+    });
+
+    southFenceSelect.addEventListener("change", () => {
+      if (southFenceSelect.value !== "None") {
+        northFenceSelect.value = "None";
+      }
+      updateFenceDropdowns();
+    });
+
     const forceStartWith3 = (input) => {
       // 1. Remove any non-numeric characters
       let value = input.value.replace(/\D/g, "");
@@ -220,35 +235,72 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const searchValue = trailerNumberInput.value.trim();
 
-      // Clear current selection state when typing
-      document
-        .querySelectorAll(".trailer-item.selected")
-        .forEach((el) => el.classList.remove("selected"));
-      selectedTrailers.clear();
+      // Select every trailer item currently in the lists
+      const allTrailerElements = document.querySelectorAll(".trailer-item");
 
-      // If the typed number exists in our active trailers set
-      if (searchValue && activeTrailers.has(searchValue)) {
-        selectedTrailers.add(searchValue);
+      allTrailerElements.forEach((el) => {
+        const trailerNum = el.dataset.trailerNumber;
 
-        // Find all elements representing this trailer (it might appear in multiple lists)
-        const targetElements = document.querySelectorAll(
-          `[data-doc-id="${searchValue}"]`,
-        );
-        targetElements.forEach((el) => el.classList.add("selected"));
+        if (searchValue === "") {
+          // If search is empty, show everything
+          el.classList.remove("hidden");
+          el.classList.remove("selected");
+        } else if (trailerNum.includes(searchValue)) {
+          // If it matches part of the number, show it
+          el.classList.remove("hidden");
 
-        // Scroll the first instance found into view
-        if (targetElements.length > 0) {
-          // A small timeout helps mobile browsers calculate the scroll position correctly
-          // while the virtual keyboard is active.
+          // Optional: Highlight it if it's an exact match
+          if (trailerNum === searchValue) {
+            el.classList.add("selected");
+          } else {
+            el.classList.remove("selected");
+          }
+        } else {
+          // If no match, hide it
+          el.classList.add("hidden");
+        }
+      });
+
+      // Keep your scroll logic for the first match found
+      if (searchValue.length >= 3) {
+        const firstMatch = document.querySelector(`.trailer-item:not(.hidden)`);
+        if (firstMatch) {
           setTimeout(() => {
-            targetElements[0].scrollIntoView({
-              behavior: "smooth",
-              block: "nearest",
-            });
-          }, 100);
+            firstMatch.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
         }
       }
     });
+
+    //   // Clear current selection state when typing
+    //   document
+    //     .querySelectorAll(".trailer-item.selected")
+    //     .forEach((el) => el.classList.remove("selected"));
+    //   selectedTrailers.clear();
+
+    //   // If the typed number exists in our active trailers set
+    //   if (searchValue && activeTrailers.has(searchValue)) {
+    //     selectedTrailers.add(searchValue);
+
+    //     // Find all elements representing this trailer (it might appear in multiple lists)
+    //     const targetElements = document.querySelectorAll(
+    //       `[data-doc-id="${searchValue}"]`,
+    //     );
+    //     targetElements.forEach((el) => el.classList.add("selected"));
+
+    //     // Scroll the first instance found into view
+    //     if (targetElements.length > 0) {
+    //       // A small timeout helps mobile browsers calculate the scroll position correctly
+    //       // while the virtual keyboard is active.
+    //       setTimeout(() => {
+    //         targetElements[0].scrollIntoView({
+    //           behavior: "smooth",
+    //           block: "nearest",
+    //         });
+    //       }, 100);
+    //     }
+    //   }
+    // });
 
     trailerNumberInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -487,8 +539,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               inboundCheckbox.checked = trailerData.inbound;
               seasonalCheckbox.checked = trailerData.seasonal;
               palletShuttleCheckbox.checked = trailerData.palletShuttle;
-              northFenceSelect.value = "None";
-              southFenceSelect.value = "None";
+              northFenceSelect.value = trailerData.northFence;
+              southFenceSelect.value = trailerData.southFence;
               if (trailerData.comments) {
                 commentContainer.classList.remove("hidden");
                 commentsTextarea.value = trailerData.comments;
