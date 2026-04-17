@@ -13,8 +13,9 @@ import {
   setDoc,
   query,
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { firebaseConfig, remoteAppId } from "./config.js";
 
-const appId = typeof __app_id !== "undefined" ? __app_id : "default-app-id";
+const appId = typeof __app_id !== "undefined" ? __app_id : remoteAppId;
 const initialAuthToken =
   typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
 const envFirebaseConfig =
@@ -22,15 +23,7 @@ const envFirebaseConfig =
     ? JSON.parse(__firebase_config)
     : null;
 
-const firebaseConfig = envFirebaseConfig || {
-  apiKey: "AIzaSyAxHIhsDl7uR2lmcmj9EWy8epX-1uBmrsw",
-  authDomain: "yard-walk.firebaseapp.com",
-  projectId: "yard-walk",
-  storageBucket: "yard-walk.firebasestorage.app",
-  messagingSenderId: "633967680523",
-  appId: "1:633967680523:web:47f7148b4966a6642e7b0e",
-  measurementId: "G-53CN6Q20PF",
-};
+const finalFirebaseConfig = envFirebaseConfig || firebaseConfig;
 
 let db;
 let auth;
@@ -175,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     setUIState("loading");
 
-    const app = initializeApp(firebaseConfig);
+    const app = initializeApp(finalFirebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
 
@@ -267,7 +260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (exactMatch) {
           setTimeout(() => {
             exactMatch.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          })
+          });
         }
       }
     });
