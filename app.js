@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const initialAuthToken =
       typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
     const envFirebaseConfig =
-      typeof __firebase_config !== "undefined"
+      typeof __firebase_config !== "undefined" && __firebase_config
         ? JSON.parse(__firebase_config)
         : null;
 
