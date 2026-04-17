@@ -153,40 +153,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     commentContainer.classList.toggle("hidden");
   });
 
+  setUIState("loading");
+
+  const appId = typeof __app_id !== "undefined" ? __app_id : "default-app-id";
+  const initialAuthToken =
+    typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
+  const envFirebaseConfig =
+    typeof __firebase_config !== "undefined" && __firebase_config
+      ? JSON.parse(__firebase_config)
+      : null;
+
+  const firebaseConfig = envFirebaseConfig || {
+    apiKey: "AIzaSyAxHIhsDl7uR2lmcmj9EWy8epX-1uBmrsw",
+    authDomain: "yard-walk.firebaseapp.com",
+    projectId: "yard-walk",
+    storageBucket: "yard-walk.firebasestorage.app",
+    messagingSenderId: "633967680523",
+    appId: "1:633967680523:web:47f7148b4966a6642e7b0e",
+    measurementId: "G-53CN6Q20PF",
+  };
+
   try {
-    setUIState("loading");
-
-    // 1. Try to load config from config.js (Local development)
-    let localFirebaseConfig = null;
-    let localRemoteAppId = "default-app-id";
-    try {
-      const config = await import("./config.js");
-      localFirebaseConfig = config.firebaseConfig;
-      localRemoteAppId = config.remoteAppId;
-    } catch (e) {
-      console.warn(
-        "config.js not found, checking for environment variables...",
-      );
-    }
-
-    // 2. Use Global Variables (Live site/GitHub Actions)
-    const appId = typeof __app_id !== "undefined" ? __app_id : localRemoteAppId;
-    const initialAuthToken =
-      typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
-    const envFirebaseConfig =
-      typeof __firebase_config !== "undefined" && __firebase_config
-        ? JSON.parse(__firebase_config)
-        : null;
-
-    const finalFirebaseConfig = envFirebaseConfig || localFirebaseConfig;
-
-    if (!finalFirebaseConfig) {
-      throw new Error(
-        "Firebase configuration is missing. Check config.js or GitHub Secrets.",
-      );
-    }
-
-    const app = initializeApp(finalFirebaseConfig);
+    const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
 
