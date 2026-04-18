@@ -36,6 +36,6 @@ A digital trailer tracking solution designed to replace traditional paper-and-pe
    ```bash
    npm run dev
    ```
-this web app was built by [Paul Rosenbaum](https://github.com/paulrosenbaum)  
+this web app was built by [Paul Rosenbaum](https://github.com/PRWS-CODING) using [React](https://react.dev) and [Firebase](https://firebase.google.com/). 
 this web app has made it to the end of my current learning path and will not be further updated.
 the new react version is live https://yard-walk-2-0.vercel.app/ 
