@@ -1,4 +1,4 @@
-# YardWalk 2.0
+# YardWalk 
 
 A digital trailer tracking solution designed to replace traditional paper-and-pen methods. Built specifically for yard crews to streamline operations, reduce errors, and provide real-time visibility into trailer statuses.
 
