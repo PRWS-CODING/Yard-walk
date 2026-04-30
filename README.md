@@ -18,7 +18,7 @@ A digital trailer tracking solution designed to replace traditional paper-and-pe
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React + Vite
+- **Frontend:** HTML5, CSS3, JavaScript
 - **Backend/Database:** Firebase Firestore
 - **Authentication:** Firebase Anonymous Auth
 - **Styling:** Custom CSS with interactive "Holo" components
@@ -26,16 +26,7 @@ A digital trailer tracking solution designed to replace traditional paper-and-pe
 ## 🛠️ Setup & Installation
 
 1. **Clone the repo**
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-3. **Set up Environment Variables:**
-   Create a `.env` file in the root directory and add your `VITE_API_KEY`.
-4. **Run Development Server:**
-   ```bash
-   npm run dev
-   ```
-this web app was built by [Paul Rosenbaum](https://github.com/PRWS-CODING) using [React](https://react.dev) and [Firebase](https://firebase.google.com/). 
-this web app has made it to the end of my current learning path and will not be further updated.
+
+this web app was built by [Paul Rosenbaum](https://github.com/PRWS-CODING) using  [Firebase](https://firebase.google.com/). 
+this web app has made it to the end of my current learning path and it will no longer be updating it.
 the new react version is live https://yard-walk-2-0.vercel.app/ 
